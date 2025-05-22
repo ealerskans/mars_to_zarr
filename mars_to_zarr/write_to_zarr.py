@@ -24,9 +24,12 @@ def write_to_zarr(ds: xr.Dataset, dataset_dict: dict) -> None:
             f"{data_root}/{model}/zarr/{dataset_dict['general']['zarr_fn']}"
         )
     else:
-        # output_path = os.path.join(data_root, "output.zarr")
-        output_path = Path(f"{data_root}/{model}/zarr/output.zarr")
-    # Path(output_path).mkdir(parents=True, exist_ok=True)
+        #output_path = Path(f"{data_root}/{model}/zarr/output.zarr")
+        output_path = Path(
+            f"{data_root}/{model}/zarr/"
+            f"{dataset_dict['general']['grib_fn'].rsplit(".grib", 1)[0]}.zarr"
+        )
+
     output_path.mkdir(parents=True, exist_ok=True)
 
     logger.info("Set coordinates correctly")
@@ -86,7 +89,7 @@ def write_to_zarr(ds: xr.Dataset, dataset_dict: dict) -> None:
         # Rename the "level" coordinate to "pressure"
         ds = ds.rename({"level": "pressure"})
         # Re-chunk the dataset
-        ds = ds.chunk({"time": 1, "pressure": 1, "lat": 512, "lon": 512})
+        ds = ds.chunk({"time": 1, "pressure": 1, "y": 512, "x": 512})
         # Variable renaming
         rename_dict = {
             "w": "tw",
