@@ -66,13 +66,11 @@ def read_source(dataset_dict: dict) -> xr.Dataset:
 
     logger.info(f"Created references for {fp_index}")
 
-    logger.info("Build zarr index")
+    logger.info("Build zarr index...")
     fn = f"{level_type}.zarr.json"
     fp_zarr_json = fp_index.parent / fn
     with open(fp_zarr_json, "w") as f:
         json.dump(ref, f)
-
-    logger.info("Built zarr index")
 
     with open(fp_zarr_json) as f:
         original = json.load(f)
@@ -96,6 +94,8 @@ def read_source(dataset_dict: dict) -> xr.Dataset:
     # Overwrite the file
     with open(fp_zarr_json, "w") as f:
         json.dump(flattened_ref, f)
+
+    logger.info("Zarr index has been built")
 
     ds = xr.open_zarr(f"reference::{fp_zarr_json}", consolidated=False)
 
